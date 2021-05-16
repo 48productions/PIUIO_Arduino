@@ -6,15 +6,19 @@ A lot of what I've done is specific to my setup and was learned with *a lot of t
 
 There's two ways to do the wiring here. In either case, you'll want all of your panel sensors to be wired in parallel (so any activated sensor activates the whole panel).
 
-### Pulldown (recommended)
+### Pulldown
 The code is pre-configured for this method.
 One wire of each sensor group/button is connected to +5V, the other wire to the Arduino and a pulldown resistor (usually 10k ohms) to ground.
 
-### Pullup
+For this config:
+ - Modify the `pinMode()` calls for the approriate buttons, change them from `INPUT_PULLUP` to just `INPUT`
+ - Invert the input logic for the appropriate buttons as well (`tmpx = digitalRead(pin);` -> `tmpx = !digitalRead(pin)`).
+
+### Pullup (pre-configured)
 
 In my cab, all the cab buttons (test, service, etc) were already wired to ground on one side. To interface with buttons wired up like these:
  - Modify the `pinMode()` calls for the appropriate buttons to change it from `INPUT` to `INPUT_PULLUP` to enable the Arduinos's internal pullup resistors.
- - Invert the input logic for the appropriate buttons as well (`tmp1 = digitalRead(pin);` -> `tmp1 = !digitalRead(pin)`).
+ - Don't invert the input logic for the appropriate buttons as well (`tmpx = !digitalRead(pin);` -> `tmpx = digitalRead(pin)`).
 **Connect the button's ground (which was already wired up to the 12V power supply's ground in my cab) to the Arduino's ground.**
 
 
