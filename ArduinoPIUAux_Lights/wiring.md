@@ -2,11 +2,21 @@
 
 A lot of what I've done is specific to my setup and was learned with *a lot of trial and error*. It's not perfect and you might need to do things differently, but this should at least give you a good start
 
-## Panel sensors
-Sensors for each panel are wired up in parallel (so any activated sensor activates the entire panel). One end of the group is connected to +5V, the other to the Arduino and a pulldown resistor to ground.
+## Panel Sensors and Cab Buttons
 
-## Cabinet buttons (test, service, etc)
-The cabinet buttons are directly connected to Arduino pins. On my cabinet, they're already wired up to ground on one side, so all you need to do are enable the Arduino's internal pullup resistors in the code and you'll be set. **Connect the button's ground (which was already wired up to the 12V power supply's ground in my cab) to the Arduino's ground to avoid issues.**
+There's two ways to do the wiring here. In either case, you'll want all of your panel sensors to be wired in parallel (so any activated sensor activates the whole panel).
+
+### Pulldown (recommended)
+The code is pre-configured for this method.
+One wire of each sensor group/button is connected to +5V, the other wire to the Arduino and a pulldown resistor (usually 10k ohms) to ground.
+
+### Pullup
+
+In my cab, all the cab buttons (test, service, etc) were already wired to ground on one side. To interface with buttons wired up like these:
+ - Modify the `pinMode()` calls for the appropriate buttons to change it from `INPUT` to `INPUT_PULLUP` to enable the Arduinos's internal pullup resistors.
+ - Invert the input logic for the appropriate buttons as well (`tmp1 = digitalRead(pin);` -> `tmp1 = !digitalRead(pin)`).
+**Connect the button's ground (which was already wired up to the 12V power supply's ground in my cab) to the Arduino's ground.**
+
 
 ## Shift Registers
 My setup outputs lighting data to 3x 74HFC595 shift registers, but can be modified to only use 2. The shift register output pins are connected to the MOSFETs for panel lights.

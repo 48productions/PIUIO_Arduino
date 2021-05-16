@@ -46,16 +46,16 @@ void setup() {
     pinMode(pinService, INPUT_PULLUP); //Service
     pinMode(pinTest, INPUT_PULLUP); //Test
     
-    pinMode(pinPad0, INPUT);// Pad start
-    pinMode(pinPad1, INPUT);
-    pinMode(pinPad2, INPUT);
-    pinMode(pinPad3, INPUT);
-    pinMode(pinPad4, INPUT);
-    pinMode(pinPad5, INPUT);
-    pinMode(pinPad6, INPUT);
-    pinMode(pinPad7, INPUT);
-    pinMode(pinPad8, INPUT);
-    pinMode(pinPad9, INPUT);// Pad end
+    pinMode(pinPad0, INPUT_PULLUP);// Pad start
+    pinMode(pinPad1, INPUT_PULLUP);
+    pinMode(pinPad2, INPUT_PULLUP);
+    pinMode(pinPad3, INPUT_PULLUP);
+    pinMode(pinPad4, INPUT_PULLUP);
+    pinMode(pinPad5, INPUT_PULLUP);
+    pinMode(pinPad6, INPUT_PULLUP);
+    pinMode(pinPad7, INPUT_PULLUP);
+    pinMode(pinPad8, INPUT_PULLUP);
+    pinMode(pinPad9, INPUT_PULLUP);// Pad end
     
     pinMode(pinCoin, INPUT_PULLUP);//Coin
 
@@ -105,15 +105,18 @@ POINT_RETURN:
   if (!enableManualLights) { //Using game-controlled lighting, read lighting data and set lighting variables
     cabLEDs = 255; padLEDsP1 = 0; padLEDsP2 = 0;
     //padLEDsP1 = Output[0]; padLEDsP2 = Output[1]; cabLEDs = Output[2];
+    
     //Supposedly this is what the format is (from lowest to highest bit):
     //Source: https://github.com/racerxdl/piuio_clone/blob/master/docs/piuio.txt , modified with my own findings
     //Byte0: ZZABCDEx
     //Byte1: ZZABCDEI
-    //Byte2: HGFxxxHN
+    //Byte2: HGFU1xxN
     //A = UL, B = UR, C = C, D = DL, E = DR
-    //N = Neon (in a byte not broken out?)
+    //N = Neon
     //FG = Marquee L1/2
     //HI = Marquee R1/2
+    //U = Always high - USB enable?
+    //1 = Coin counter 1
 
     if (bitRead(Output[0], 2)) { bitSet(padLEDsP1, 4); } //P1 Pad: UL
     if (bitRead(Output[0], 3)) { bitSet(padLEDsP1, 0); } //UR
@@ -132,6 +135,7 @@ POINT_RETURN:
     if (bitRead(Output[1], 7)) { bitClear(cabLEDs, 2); } //Marquee L2
     if (bitRead(Output[2], 2)) { bitClear(cabLEDs, 4); } //Marquee L1
     if (bitRead(Output[2], 7)) { bitClear(cabLEDs, 5); } //Bass neon
+    if (bitRead(Output[2], 3)) { bitClear(cabLEDs, 5); } //USB Enable
 
     
   }
@@ -142,12 +146,12 @@ POINT_RETURN:
   inputn = 2;   tmp1 = digitalRead(pinPad2); if (enableManualLights && tmp1) { bitSet(padLEDsP1, 3); } SET_THING //P1 C
   inputn = 1;   tmp1 = digitalRead(pinPad3); if (enableManualLights && tmp1) { bitSet(padLEDsP1, 1); } SET_THING //P1 UR
   inputn = 0;   tmp1 = digitalRead(pinPad4); if (enableManualLights && tmp1) { bitSet(padLEDsP1, 2); } SET_THING //P1 UL
-  inputn = 12;  tmp1 = digitalRead(pinPad5); if (enableManualLights && tmp1) { bitSet(padLEDsP2, 4); } SET_THING //P2 
-  inputn = 11;  tmp1 = digitalRead(pinPad6); if (enableManualLights && tmp1) { bitSet(padLEDsP2, 0); } SET_THING //P2 
-  inputn = 10;  tmp1 = digitalRead(pinPad7); if (enableManualLights && tmp1) { bitSet(padLEDsP2, 3); } SET_THING //P2 C
-  inputn = 9;   tmp1 = digitalRead(pinPad8); if (enableManualLights && tmp1) { bitSet(padLEDsP2, 1); } SET_THING //P2 
-  inputn = 8;   tmp1 = digitalRead(pinPad9); if (enableManualLights && tmp1) { bitSet(padLEDsP2, 2); } SET_THING //P2 
-  inputn = 5;   tmp1 = digitalRead(pinClear); SET_THING // CLEAR?
+  inputn = 8+4;  tmp1 = digitalRead(pinPad5); if (enableManualLights && tmp1) { bitSet(padLEDsP2, 4); } SET_THING //P2 
+  inputn = 8+3;  tmp1 = digitalRead(pinPad6); if (enableManualLights && tmp1) { bitSet(padLEDsP2, 0); } SET_THING //P2 
+  inputn = 8+2;  tmp1 = digitalRead(pinPad7); if (enableManualLights && tmp1) { bitSet(padLEDsP2, 3); } SET_THING //P2 C
+  inputn = 8+1;   tmp1 = digitalRead(pinPad8); if (enableManualLights && tmp1) { bitSet(padLEDsP2, 1); } SET_THING //P2 
+  inputn = 8+0;   tmp1 = digitalRead(pinPad9); if (enableManualLights && tmp1) { bitSet(padLEDsP2, 2); } SET_THING //P2 
+  inputn = 5;   tmp1 = digitalRead(pinClear); SET_THING // CLEAR
   inputn = 6;   tmp1 = digitalRead(pinService); SET_THING // SERVICE
   inputn = 8+5; tmp1 = digitalRead(pinTest); SET_THING // TEST
   inputn = 7;   tmp1 = digitalRead(pinCoin); SET_THING // COIN 1
